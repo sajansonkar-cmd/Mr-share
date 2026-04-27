@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Access File | File Sharing System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <header class="header">
+    <h1>File Sharing System</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/access">Access</a>
+    </nav>
+  </header>
+
+  <div class="main-wrapper">
+    <div class="container">
+      <h2>Access File</h2>
+      <p>Enter the access code you received to retrieve your file instantly.</p>
+      
+      <form action="/access" method="POST">
+        <input type="text" name="code" placeholder="Enter your 6-digit access code" required>
+        <button type="submit">Unlock & Open File</button>
+      </form>
+
+      <div class="btn-group" style="margin-top: 20px;">
+        <a href="/" class="btn btn-secondary">
+          <button type="button">Back to Home</button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2026 File Sharing System | curiously developed by <strong><a href="https://sarjaninfo.me/" target="_blank">Team Drifters</a></strong></p>
+    <p>Temporary & Secure File Sharing</p>
+  </footer>
+
+</body>
+</html>
