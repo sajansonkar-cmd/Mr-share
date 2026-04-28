@@ -7,6 +7,10 @@ const fs = require("fs");
 
 const app = express();
 
+// ensure uploads folder exists
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
