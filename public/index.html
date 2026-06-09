@@ -1,46 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>File Sharing System</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mr. Share - Secure Temporary File Sharing</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header class="header">
-  <h1>File Sharing System</h1>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/upload">Upload</a>
-    <a href="/access">Access</a>
-  </nav>
-</header>
+  <!-- Animated Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
 
-  <div class="container">
-  <h2>Secure Temporary File Sharing</h2>
-  <p style="margin: 15px 0;">
-    Upload files and access them securely using a unique code.
-    No login required.
-  </p>
+  <!-- Header -->
+  <header class="header">
+    <h1>Mr. Share</h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/access">Access</a>
+    </nav>
+  </header>
 
-  <a href="/upload">
-    <button>Upload File</button>
-  </a>
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1 class="hero-title">Secure Temporary File Sharing</h1>
+      <p class="hero-tagline">Transfer files instantly with unique access codes. No account, no hassle, no compromise on security.</p>
+      <div class="btn-group hero-ctas">
+        <a href="/upload" class="btn btn-primary">Upload File</a>
+        <a href="/access" class="btn btn-secondary">Access File</a>
+      </div>
+    </section>
 
-  <br><br>
+    <!-- Features Section -->
+    <section class="features">
+      <h2 class="features-title">Why Choose Mr. Share?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">📤</span>
+          <h3>Temporary File Sharing</h3>
+          <p>Share files that automatically expire, keeping your data clean and secure. Set and forget.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔐</span>
+          <h3>Secure Access Codes</h3>
+          <p>Unique access codes ensure only intended recipients can retrieve your shared files.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⏰</span>
+          <h3>Automatic Expiry</h3>
+          <p>Files self-destruct after expiration. No manual cleanup needed, privacy guaranteed.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">✨</span>
+          <h3>No Login Required</h3>
+          <p>Get started instantly without creating an account. Fast, simple, and frictionless.</p>
+        </div>
+      </div>
+    </section>
+  </div>
 
-  <a href="/access">
-    <button>Access File</button>
-  </a>
-</div>
-
-<footer class="footer">
-  <p>
-    © 2026 File Sharing System |
-    curiously developed by <strong><a href="https://sarjaninfo.me/" target="_blank">Team Drifters</a></strong>
-
-  </p>
-  <p>
-    Temporary & Secure File Sharing
-  </p>
-</footer>
+  <!-- Footer -->
+  <footer class="footer">
+    <p>
+      © 2026 Mr. Share |
+      curiously developed by <strong><a href="https://sarjaninfo.me/" target="_blank">Team Drifters</a></strong> |
+      <a href="https://github.com/kclamano/Mr-share" target="_blank">View on GitHub</a>
+    </p>
+    <p>Secure, Temporary & Anonymous File Sharing</p>
+  </footer>
 </body>
 </html>
