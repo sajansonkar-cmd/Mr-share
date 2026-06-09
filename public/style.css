@@ -336,3 +336,11 @@ footer.footer p { margin-top: 8px; }
     padding: 24px 16px;
   }
 }
+
+.brand-link,
+.brand-link:visited,
+.brand-link:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
