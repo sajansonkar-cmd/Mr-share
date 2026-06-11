@@ -56,5 +56,44 @@
     }
   </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropZone = document.querySelector('.container');
+    const fileInput = document.querySelector('input[type="file"]');
+
+    if (!dropZone || !fileInput) return;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-active'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-active'), false);
+    });
+
+    dropZone.addEventListener('drop', e => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            fileInput.files = files;
+            
+            const statusLabel = dropZone.querySelector('.file-label') || dropZone.querySelector('p');
+            if (statusLabel) {
+                statusLabel.textContent = "Selected: " + files[0].name;
+                statusLabel.style.color = "#00ffcc";
+            }
+        }
+    }, false);
+});
+</script>
+
 </body>
 </html>

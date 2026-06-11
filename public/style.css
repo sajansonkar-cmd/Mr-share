@@ -162,3 +162,10 @@ footer.footer { text-align: center; padding: 30px; font-size: 0.85rem; color: va
 footer.footer a { color: var(--primary); text-decoration: none; font-weight: 600; transition: text-shadow 0.3s; }
 footer.footer a:hover { text-shadow: 0 0 8px var(--primary); }
 footer.footer p { margin-top: 5px; }
+
+.container.drag-active {
+  border-color: rgba(0, 255, 204, 0.6) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease-in-out;
+}
