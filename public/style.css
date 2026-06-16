@@ -344,3 +344,29 @@ footer.footer p { margin-top: 8px; }
   text-decoration: none !important;
   cursor: pointer !important;
 }
+[data-theme="light"] {
+  --bg-color: #f0f0f5;
+  --surface-color: rgba(255, 255, 255, 0.8);
+  --header-bg: rgba(240, 240, 245, 0.9);
+  --orb-1-color: rgba(59, 130, 246, 0.08);
+  --orb-2-color: rgba(139, 92, 246, 0.08);
+}
+
+[data-theme="light"] body {
+  color: #0a0a0f;
+}
+
+[data-theme="light"] .hero-title,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] p {
+  -webkit-text-fill-color: #0a0a0f;
+  color: #0a0a0f;
+}
+
+[data-theme="light"] .hero-subtitle,
+[data-theme="light"] .feature-desc {
+  color: #333333 !important;
+  -webkit-text-fill-color: #333333;
+}
