@@ -370,3 +370,41 @@ footer.footer p { margin-top: 8px; }
   color: #333333 !important;
   -webkit-text-fill-color: #333333;
 }
+
+/* Light mode button and input fixes */
+[data-theme="light"] button,
+[data-theme="light"] .btn {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .btn-secondary {
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.3) !important;
+  color: #0a0a0f !important;
+}
+
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="file"] {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.3) !important;
+  color: #0a0a0f !important;
+}
+
+[data-theme="light"] input[type="file"]::file-selector-button {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #0a0a0f !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light"] .container {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-theme="light"] nav a {
+  color: #333333 !important;
+}
+
+[data-theme="light"] nav a:hover {
+  color: #0a0a0f !important;
+}
