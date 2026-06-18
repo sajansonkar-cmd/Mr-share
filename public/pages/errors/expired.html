@@ -1,18 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>File Expired</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Expired | Mr. Share</title>
   <link rel="stylesheet" href="/style.css">
+  <script src="/theme.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h2>File Expired</h2>
-    <p>This file is no longer available.</p>
-    <a href="/access"><button>Go Back</button></a>
-<a href="/">
-  <button>Back to Home</button>
-</a>
-
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
   </div>
+  <header class="header">
+    <h1><a href="/" class="brand-link">Mr. Share</a></h1>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/upload">Upload</a>
+      <a href="/access">Access</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </nav>
+  </header>
+  <div class="main-wrapper">
+    <div class="container">
+      <div style="font-size:4rem;margin-bottom:20px;">⏰</div>
+      <h2>File Expired</h2>
+      <p>This file has expired and is no longer available. Files are automatically deleted after expiry for your privacy.</p>
+      <div class="btn-group">
+        <a href="/upload" class="btn">Upload New File</a>
+        <a href="/" class="btn btn-secondary">Go Home</a>
+      </div>
+    </div>
+  </div>
+  <footer class="footer">
+    <p>© 2026 Mr. Share | Secure, Temporary & Anonymous File Sharing</p>
+  </footer>
 </body>
 </html>
