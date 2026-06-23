@@ -1,9 +1,11 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
-const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
+
+const fileService = require("./services/fileService");
+const shareService = require("./services/shareService");
+const databaseService = require("./services/databaseService");
 
 const app = express();
 
@@ -23,23 +25,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// ================= DATABASE =================
-
-const db = new sqlite3.Database(
-  path.join(__dirname, "database.db")
-);
-
-db.run(`
-  CREATE TABLE IF NOT EXISTS files (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    code TEXT,
-    original_name TEXT,
-    stored_name TEXT,
-    upload_time TEXT,
-    expiry_time INTEGER
-  )
-`);
 
 
 // ================= MULTER =================
@@ -105,18 +90,28 @@ app.post("/upload", upload.single("file"), (req, res) => {
     return res.status(400).send("Invalid file name");
   }
 
-  const code = uuidv4().slice(0, 6).toUpperCase();
-  const uploadTime = new Date().toISOString();
-  const expiryTime = Date.now() + EXPIRY_DURATION;
+const code = shareService.generateShareCode();
 
-  db.run(
-    `INSERT INTO files (code, original_name, stored_name, upload_time, expiry_time)
-     VALUES (?, ?, ?, ?, ?)`,
-    [code, req.file.originalname, req.file.filename, uploadTime, expiryTime],
-    () => {
-      res.redirect(`/result/${code}`);
-    }
-  );
+const uploadTime = fileService.getUploadTime();
+
+const expiryTime =
+  fileService.calculateExpiryTime();
+
+ databaseService
+  .createFileRecord(
+    code,
+    req.file.originalname,
+    req.file.filename,
+    uploadTime,
+    expiryTime
+  )
+  .then(() => {
+    res.redirect(`/result/${code}`);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send("Database Error");
+  });
 });
 
 
@@ -195,30 +190,39 @@ app.get("/open", (req, res) => {
 
 
 // File preview page
-app.get("/file/:code", (req, res) => {
+app.get("/file/:code", async (req, res) => {
 
   const code = req.params.code;
 
-  db.get(
-    "SELECT * FROM files WHERE code = ?",
-    [code],
-    (err, row) => {
+  try {
 
-      if (!row) {
-        return res.status(404).sendFile(
-          path.join(__dirname, "public/pages/errors/invalid.html")
-        );
-      }
+    const row =
+      await databaseService.getFileByCode(code);
 
-      if (Date.now() > row.expiry_time) {
-        return res.status(410).sendFile(
-          path.join(__dirname, "public/pages/errors/expired.html")
-        );
-      }
+    if (!row) {
+      return res.status(404).sendFile(
+        path.join(
+          __dirname,
+          "public/pages/errors/invalid.html"
+        )
+      );
+    }
 
-      const remaining = Math.max(0, row.expiry_time - Date.now());
+    if (Date.now() > row.expiry_time) {
+      return res.status(410).sendFile(
+        path.join(
+          __dirname,
+          "public/pages/errors/expired.html"
+        )
+      );
+    }
 
-      res.send(`
+    const remaining = Math.max(
+      0,
+      row.expiry_time - Date.now()
+    );
+
+    res.send(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -272,33 +276,59 @@ time -= 1000;
 </body>
 </html>
 `);
-    }
-  );
+
+  } catch (err) {
+
+    console.error(err);
+
+    res
+      .status(500)
+      .send("Database Error");
+
+  }
+
 });
 
 
 // Download route
-app.get("/download/:code", (req, res) => {
+app.get("/download/:code", async (req, res) => {
 
   const code = req.params.code;
 
-  db.get(
-    "SELECT * FROM files WHERE code = ?",
-    [code],
-    (err, row) => {
+  try {
 
-      if (!row || Date.now() > row.expiry_time) {
-        return res.redirect("/access");
-      }
+    const row =
+      await databaseService.getFileByCode(code);
 
-      const filePath = path.join(__dirname, "uploads", row.stored_name);
-
-      res.download(filePath, row.original_name);
-
+    if (
+      !row ||
+      Date.now() > row.expiry_time
+    ) {
+      return res.redirect("/access");
     }
-  );
-});
 
+    const filePath = path.join(
+      __dirname,
+      "uploads",
+      row.stored_name
+    );
+
+    res.download(
+      filePath,
+      row.original_name
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    res
+      .status(500)
+      .send("Database Error");
+
+  }
+
+});
 
 // About page
 app.get("/about", (req, res) => {
@@ -308,34 +338,39 @@ app.get("/about", (req, res) => {
 
 // ================= CLEANUP JOB =================
 
-setInterval(() => {
+setInterval(async () => {
 
   const now = Date.now();
 
-  db.all(
-    "SELECT * FROM files WHERE expiry_time < ?",
-    [now],
-    (err, rows) => {
+  try {
 
-      if (rows && rows.length > 0) {
+    const rows =
+      await databaseService.getExpiredFiles(now);
 
-        rows.forEach(file => {
+    for (const file of rows) {
 
-          const filePath = path.join(__dirname, "uploads", file.stored_name);
+      const filePath = path.join(
+        __dirname,
+        "uploads",
+        file.stored_name
+      );
 
-          fs.unlink(filePath, () => {});
+      fs.unlink(filePath, () => {});
 
-          db.run(
-            "DELETE FROM files WHERE id = ?",
-            [file.id]
-          );
-
-        });
-
-      }
+      await databaseService.deleteFileRecord(
+        file.id
+      );
 
     }
-  );
+
+  } catch (err) {
+
+    console.error(
+      "Cleanup job failed:",
+      err
+    );
+
+  }
 
 }, 60000);
 
