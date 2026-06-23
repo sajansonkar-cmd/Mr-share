@@ -1,4 +1,6 @@
-const EXPIRY_DURATION = 24 * 60 * 60 * 1000;
+const {
+  EXPIRY_DURATION
+} = require("../config/constants");
 
 function calculateExpiryTime() {
   return Date.now() + EXPIRY_DURATION;

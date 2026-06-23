@@ -6,6 +6,9 @@ const fs = require("fs");
 const fileService = require("./services/fileService");
 const shareService = require("./services/shareService");
 const databaseService = require("./services/databaseService");
+const {
+  MAX_FILE_SIZE
+} = require("./config/constants");
 
 const app = express();
 
@@ -40,13 +43,18 @@ const storage = multer.diskStorage({
 });
 
 function fileFilter(req, file, cb) {
-  const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "application/pdf",
-    "application/zip",
-    "video/mp4"
-  ];
+  const allowedTypes =
+  require("./config/allowedFileTypes");
+
+function fileFilter(req, file, cb) {
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("File type not allowed"), false);
+  }
+
+}
 
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
@@ -59,7 +67,7 @@ const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 50 * 1024 * 1024
+    fileSize: MAX_FILE_SIZE
   }
 });
 
