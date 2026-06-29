@@ -1,7 +1,11 @@
 const express = require("express");
-const multer = require("multer");
+const upload = require("./config/multerConfig");
 const path = require("path");
 const fs = require("fs");
+const initializeUploads = require("./startup/initializeUploads");
+const errorHandler = require("./middleware/errorHandler");
+const requestLogger = require("./middleware/requestLogger");
+const logger = require("./utils/logger");
 
 const fileService = require("./services/fileService");
 const shareService = require("./services/shareService");
@@ -11,65 +15,17 @@ const {
 } = require("./config/constants");
 
 const app = express();
-
-// ensure uploads folder exists
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
-}
+initializeUploads();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const EXPIRY_DURATION = 24 * 60 * 60 * 1000;
 
-// Request logger
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.ip} ${req.method} ${req.url}`);
-  next();
-});
 
+// ================= Request logger =================
 
-
-// ================= MULTER =================
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + path.extname(file.originalname);
-    cb(null, uniqueName);
-  }
-});
-
-function fileFilter(req, file, cb) {
-  const allowedTypes =
-  require("./config/allowedFileTypes");
-
-function fileFilter(req, file, cb) {
-
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("File type not allowed"), false);
-  }
-
-}
-
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("File type not allowed"), false);
-  }
-}
-
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: {
-    fileSize: MAX_FILE_SIZE
-  }
-});
+app.use(requestLogger);
 
 
 // ================= ROUTES =================
@@ -117,7 +73,7 @@ const expiryTime =
     res.redirect(`/result/${code}`);
   })
   .catch((err) => {
-    console.error(err);
+    logger.error(err.stack || err.message || err);
     res.status(500).send("Database Error");
   });
 });
@@ -287,7 +243,7 @@ time -= 1000;
 
   } catch (err) {
 
-    console.error(err);
+    logger.error(err.stack || err.message || err);
 
     res
       .status(500)
@@ -328,7 +284,7 @@ app.get("/download/:code", async (req, res) => {
 
   } catch (err) {
 
-    console.error(err);
+    logger.error(err.stack || err.message || err);
 
     res
       .status(500)
@@ -373,9 +329,8 @@ setInterval(async () => {
 
   } catch (err) {
 
-    console.error(
-      "Cleanup job failed:",
-      err
+    logger.error(
+      `Cleanup job failed: ${err.stack || err.message || err}`
     );
 
   }
@@ -385,19 +340,7 @@ setInterval(async () => {
 
 // ================= ERROR HANDLING =================
 
-app.use((err, req, res, next) => {
-
-  if (err instanceof multer.MulterError) {
-    return res.status(400).send(err.message);
-  }
-
-  if (err) {
-    return res.status(400).send(err.message);
-  }
-
-  next();
-
-});
+app.use(errorHandler);
 
 
 // 404 (must be last)
@@ -415,5 +358,5 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
 });
