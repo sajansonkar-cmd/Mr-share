@@ -6,7 +6,10 @@ const initializeUploads = require("./startup/initializeUploads");
 const errorHandler = require("./middleware/errorHandler");
 const requestLogger = require("./middleware/requestLogger");
 const logger = require("./utils/logger");
+const uploadRoutes = require("./routes/uploadRoutes");
 
+const pageController =
+require("./controllers/pageController");
 const uploadController =
 require("./controllers/uploadController");
 const fileService = require("./services/fileService");
@@ -21,6 +24,7 @@ initializeUploads();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(uploadRoutes);
 
 const EXPIRY_DURATION = 24 * 60 * 60 * 1000;
 
@@ -40,71 +44,25 @@ app.use(requestLogger);
 
 
 // Upload page
-app.get("/upload", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/pages/test-upload.html"));
-});
-
-
-// Upload file
-app.post(
+app.get(
   "/upload",
-  upload.single("file"),
-  uploadController.uploadFile
+  pageController.showUploadPage
 );
 
 
+
 // Upload success page
-app.get("/result/:code", (req, res) => {
-
-  const code = req.params.code;
-
-  res.send(`
-<!DOCTYPE html>
-<html>
-<head>
-<title>Upload Successful</title>
-<link rel="stylesheet" href="/style.css">
-</head>
-
-<body>
-
-<div class="container"> 
-
-<h2>Upload Successful</h2>
-
-<p>Your access code:</p>
-
-<input id="code" value="${code}" readonly>
-
-<button onclick="copy()">Copy Code</button>
-
-<a href="/access">
-<button>Go to Access Page</button>
-</a>
-
-</div>
-
-<script>
-function copy() {
-  const input = document.getElementById("code");
-  input.select();
-  document.execCommand("copy");
-  alert("Code copied!");
-}
-</script>
-
-</body>
-</html>
-`);
-});
+app.get(
+  "/result/:code",
+  pageController.showResultPage
+);
 
 
 // Access page (important route)
-app.get("/access", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public/pages/access.html")
-  );
-});
+app.get(
+  "/access",
+  pageController.showAccessPage
+);
 
 
 // Access form submission
@@ -269,9 +227,10 @@ app.get("/download/:code", async (req, res) => {
 });
 
 // About page
-app.get("/about", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/pages/about.html"));
-});
+app.get(
+  "/about",
+  pageController.showAboutPage
+);
 
 
 // ================= CLEANUP JOB =================
