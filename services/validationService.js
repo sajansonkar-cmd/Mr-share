@@ -1,21 +1,20 @@
 const { fileTypeFromFile } = require("file-type");
-
-const allowedTypes =
-  require("../config/allowedFileTypes");
+const allowedFileTypes = require("../config/allowedFileTypes");
 
 async function validateUploadedFile(filePath) {
+  try {
+    const detectedType = await fileTypeFromFile(filePath);
 
-  const detectedType =
-    await fileTypeFromFile(filePath);
+    if (!detectedType) {
+      return false;
+    }
 
-  if (!detectedType) {
+    return allowedFileTypes.includes(detectedType.mime);
+
+  } catch (error) {
+    console.error("Validation Error:", error.message);
     return false;
   }
-
-  return allowedTypes.includes(
-    detectedType.mime
-  );
-
 }
 
 module.exports = {
