@@ -14,10 +14,14 @@ function warn(message) {
   );
 }
 
-function error(message) {
+function error(message, err = null) {
   console.error(
     `[ERROR] ${formatTime()} - ${message}`
   );
+
+  if (err) {
+    console.error(err);
+  }
 }
 
 module.exports = {
