@@ -7,6 +7,8 @@ const errorHandler = require("./middleware/errorHandler");
 const requestLogger = require("./middleware/requestLogger");
 const logger = require("./utils/logger");
 
+const uploadController =
+require("./controllers/uploadController");
 const fileService = require("./services/fileService");
 const shareService = require("./services/shareService");
 const databaseService = require("./services/databaseService");
@@ -44,39 +46,11 @@ app.get("/upload", (req, res) => {
 
 
 // Upload file
-app.post("/upload", upload.single("file"), (req, res) => {
-
-  if (!req.file) {
-    return res.status(400).send("No file uploaded");
-  }
-
-  if (req.file.originalname.includes("..")) {
-    return res.status(400).send("Invalid file name");
-  }
-
-const code = shareService.generateShareCode();
-
-const uploadTime = fileService.getUploadTime();
-
-const expiryTime =
-  fileService.calculateExpiryTime();
-
- databaseService
-  .createFileRecord(
-    code,
-    req.file.originalname,
-    req.file.filename,
-    uploadTime,
-    expiryTime
-  )
-  .then(() => {
-    res.redirect(`/result/${code}`);
-  })
-  .catch((err) => {
-    logger.error(err.stack || err.message || err);
-    res.status(500).send("Database Error");
-  });
-});
+app.post(
+  "/upload",
+  upload.single("file"),
+  uploadController.uploadFile
+);
 
 
 // Upload success page
